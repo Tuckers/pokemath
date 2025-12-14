@@ -3,6 +3,7 @@
 	import PokemonCard from './PokemonCard.svelte';
 	import Dice from './Dice.svelte';
 	import Arrow from './Arrow.svelte';
+	import Toast from './Toast.svelte';
 
 	let {
 		attacker,
@@ -22,6 +23,7 @@
 
 	let answered = $state(false);
 	let userAnswer = $state<boolean | null>(null);
+	let showToast = $state(false);
 
 	// Calculate if it's a knockout
 	const remainingHp = $derived(defender.hp - previousDamage);
@@ -33,13 +35,15 @@
 
 		userAnswer = answer;
 		answered = true;
+		showToast = true;
 
 		const isCorrect = answer === isKnockout;
 
 		// Wait a moment to show feedback before calling onAnswer
 		setTimeout(() => {
+			showToast = false;
 			onAnswer(isCorrect);
-		}, 1500);
+		}, 2000);
 	}
 
 	const feedbackMessage = $derived.by(() => {
@@ -105,33 +109,28 @@
 					NOPE
 				</button>
 			</div>
-
-			{#if answered}
-				<div class="feedback" class:correct={userAnswer === isKnockout}>
-					{feedbackMessage}
-				</div>
-			{/if}
 		</div>
 
 		<div class="cards-section">
-			<div class="card-wrapper defender">
+			<div class="card-wrapper defender animate-slide-in-defender">
 				<PokemonCard pokemon={defender} damage={previousDamage} role="defender" />
 			</div>
-			<div class="card-wrapper attacker">
+			<div class="card-wrapper attacker animate-slide-in-attacker">
 				<PokemonCard pokemon={attacker} role="attacker" />
 			</div>
 
 			<!-- Attack dice and arrow -->
 			<div class="attack-damage-display">
-				<div class="attack-arrow">
+				<div class="attack-arrow animate-slide-up">
 					<Arrow />
 				</div>
 				<div class="attack-dice">
 					{#each attackDice as die, i (die)}
 						<div
-							class="attack-die"
+							class="attack-die animate-dice-drop"
 							style="
 								transform: rotate({die.rotation}deg) translate({(i % 2) * 15 - 7.5}px, {Math.floor(i / 2) * 20}px);
+								animation-delay: {0.6 + i * 0.1}s;
 							"
 						>
 							<Dice value={die.value} rotation={0} />
@@ -142,6 +141,8 @@
 		</div>
 	</div>
 </div>
+
+<Toast show={showToast} correct={userAnswer === isKnockout} message={feedbackMessage} />
 
 <style>
 	.battle {
@@ -344,25 +345,6 @@
 		border-color: #dc3545;
 	}
 
-	.feedback {
-		padding: 20px 32px;
-		border-radius: 12px;
-		font-size: 24px;
-		font-weight: 700;
-		text-align: center;
-		margin-top: 20px;
-	}
-
-	.feedback.correct {
-		background: #28a745;
-		color: white;
-	}
-
-	.feedback:not(.correct) {
-		background: #dc3545;
-		color: white;
-	}
-
 	.cards-section {
 		flex: 1;
 		display: flex;
@@ -396,6 +378,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 20px;
+		max-width: 300px;
 	}
 
 	.attack-arrow {
@@ -411,5 +394,69 @@
 
 	.attack-die {
 		transition: all 0.3s ease;
+	}
+
+	/* Entry Animations */
+	.animate-slide-in-defender {
+		animation: slideInDefender 0.6s cubic-bezier(0, 0.52, 0.53, 1);
+	}
+
+	.animate-slide-in-attacker {
+		animation: slideInAttacker 0.6s cubic-bezier(0, 0.52, 0.53, 1);
+	}
+
+	.animate-slide-up {
+		animation: slideUp 0.5s cubic-bezier(0, 0.52, 0.53, 1) 0.8s both;
+	}
+
+	.animate-dice-drop {
+		animation: diceDrop 0.4s cubic-bezier(0, 0.52, 0.53, 1) both;
+	}
+
+	@keyframes slideInDefender {
+		from {
+			opacity: 0;
+			transform: rotate(210.769deg) translate(0, 300px);
+		}
+		to {
+			opacity: 1;
+			transform: rotate(210.769deg) translate(0, 0);
+		}
+	}
+
+	@keyframes slideInAttacker {
+		from {
+			opacity: 0;
+			transform: rotate(30.769deg) translate(0, 300px);
+		}
+		to {
+			opacity: 1;
+			transform: rotate(30.769deg) translate(0, 0);
+		}
+	}
+
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translateY(60px);
+		}
+		to {
+			opacity: 0.9;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes diceDrop {
+		from {
+			opacity: 0;
+			transform: translateY(-40px) scale(0.5);
+		}
+		60% {
+			transform: translateY(5px) scale(1.1);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
 	}
 </style>

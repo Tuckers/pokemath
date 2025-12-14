@@ -1,38 +1,85 @@
-# sv
+# PokeMath Battle
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A fun, interactive math learning game for kids built with Svelte 5! Battle Pokemon cards while practicing mental math with addition and subtraction.
 
-## Creating a project
+## About
 
-If you're seeing this, you've probably already done this step. Congrats!
+PokeMath helps young learners (ages 6+) practice mental arithmetic through Pokemon-themed battles. Each round presents a Pokemon defender with some existing damage, then shows an incoming attack. Players must quickly calculate if the attack will knock out the Pokemon!
 
-```sh
-# create a new project in the current directory
-npx sv create
+**Game Mechanics:**
+- Defender starts with HP and has previous damage (shown with dice)
+- Attacker launches a new attack with specific damage
+- Player decides: Will this knock out the defender?
+- Instant feedback with explanations
+- Score tracking to monitor progress
 
-# create a new project in my-app
-npx sv create my-app
-```
+## Tech Stack
 
-## Developing
+- **Svelte 5** with runes ($state, $derived, $props)
+- **SvelteKit** for the framework
+- **TypeScript** for type safety
+- Pure CSS (no Tailwind)
+- 33 Pokemon cards from the original trading card game
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Development
 
-```sh
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
 npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+# Type check
+npm run check
 
-## Building
-
-To create a production version of your app:
-
-```sh
+# Build for production
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Project Structure
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```
+src/
+├── lib/
+│   ├── components/
+│   │   ├── Battle.svelte      # Main battle component
+│   │   ├── PokemonCard.svelte # Card display
+│   │   ├── Dice.svelte        # Damage counter dice
+│   │   ├── Arrow.svelte       # Attack indicator
+│   │   └── Toast.svelte       # Feedback notifications
+│   └── data/
+│       └── pokemon.ts         # Pokemon data & logic
+└── routes/
+    └── +page.svelte           # Main page
+
+static/
+└── cards/                     # Pokemon card images
+```
+
+## Features
+
+- Smooth animations when battles load
+- Toast notifications for instant feedback
+- Score tracking and percentage display
+- Automatic progression to next battle
+- Kid-friendly visual design
+
+## Adding More Pokemon
+
+Add new Pokemon to `src/lib/data/pokemon.ts`:
+
+```typescript
+{
+  id: 34,
+  name: "Mewtwo",
+  hp: 60,
+  imagePath: "/cards/mewtwo.png"
+}
+```
+
+Place the card image in `static/cards/` and you're done!
+
+---
+
+Built with ❤️ for young Pokemon trainers learning math
